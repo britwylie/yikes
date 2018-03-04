@@ -2,6 +2,7 @@
 * Player class for Othello
 * @author bwylie & tloverid
 */
+//hello Zach
 #include "player.hpp"
 
 /*
