@@ -11,7 +11,7 @@ class Player {
 public:
     Player(Side side);
     ~Player();
-    Board b;
+    Board* b;
     Side my_side;
     Side other_side;
 
