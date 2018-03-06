@@ -103,12 +103,7 @@ Move *Player::getBestMove(std::vector<Move*> moves) {
      maybe->doMove(*i, my_side);
      int temp = maybe->count(my_side) - maybe->count(other_side);
      //multiply by values to get modified possible score
-     if((*i)->getY() == 0 || (*i)->getY() == 7 || (*i)->getX() == 0 || (*i)->getX() == 7) {
-       temp *= 3;
-     }
-     if((*i)->getY() == 1 || (*i)->getY() == 6 || (*i)->getX() == 1 || (*i)->getX() == 6) {
-       temp *= -3;
-     }
+     temp *= multiplier[(*i)->getY()][(*i)->getX()];
 
      if (temp > score) {
        score = temp;
