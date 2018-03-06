@@ -49,28 +49,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 
      if (!this->b->isDone()) {
        if(b->hasMoves(this->my_side)) {
-         std::vector<Move*> all_moves;
-         Move* possible = new Move(0, 0);
-         for (int i = 0; i < 8; i++) {
-             for (int j = 0; j < 8; j++) {
-                 possible = new Move(i, j);
-                 if (b->checkMove(possible, this->my_side)) {
-                   all_moves.push_back(possible);
-
-                 }
-             }
-         }
-
-
-         //b->doMove(all_moves.back(), my_side);
-         /*std::vector<Move*>::iterator i;
-         for(i = all_moves.begin(); i != all_moves.end(); i++) {
-           std::cerr << (*i)->getX() << " " << (*i)->getY() << " ";
-         }
-         */
-         //return all_moves.back();
-
-
+         std::vector<Move*> all_moves = getMoves(this->my_side);
          Move* best = getBestMove(all_moves);
          b->doMove(best, this->my_side);
          return best;
@@ -81,7 +60,25 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 }
 
 /*
-*
+* returns a list of all possible moves for a particular side
+*/
+std::vector<Move*> Player::getMoves(Side s) {
+  std::vector<Move*> all_moves;
+  Move* possible = new Move(0, 0);
+  for (int i = 0; i < 8; i++) {
+      for (int j = 0; j < 8; j++) {
+          possible = new Move(i, j);
+          if (b->checkMove(possible, s)) {
+            all_moves.push_back(possible);
+          }
+      }
+  }
+  return all_moves;
+}
+
+/*
+* Uses a simple heuristic to sort through the possible moves and get the one
+* that maximizes the score of the move
 */
 Move *Player::getBestMove(std::vector<Move*> moves) {
   //sets up a test board
