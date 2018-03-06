@@ -115,6 +115,10 @@ Move *Player::getBestMove(std::vector<Move*> moves) {
   return bestMove;
 }
 
+/*
+* miniMax - uses a simple heuristic and the miniMax algorithm to find the
+* best move
+*/
 Move *Player::miniMax(std::vector<Move*> moves){
   vector<Move*> yourMoves = getMoves(my_side);
   vector<Move*> opponentMoves;
