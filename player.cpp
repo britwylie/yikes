@@ -131,18 +131,22 @@ Move *Player::miniMax(std::vector<Move*> moves){
   int maxScore = -64;
   Move* choice;
 
+  //go through our list of possible moves, apply one to the board each time
   for(unsigned int i = 0; i < yourMoves.size(); i++)
   {
     minScore = 64;
     copy = this->b->copy();
     copy->doMove(yourMoves[i], my_side);
     opponentMoves = getMoves(other_side);
+    //once we have applied a move, go through the opponent's list of possible
+    //moves and calculate our simple score
     for(unsigned int j = 0; j < opponentMoves.size(); j++)
     {
       copy->doMove(opponentMoves[j], other_side);
       score = copy->count(my_side) - copy->count(other_side);
       scores.push_back(score);
     }
+    //now go through all the possible scores and find the minimum score
     for(unsigned int k = 0; k < scores.size(); k++)
     {
       if(scores[k] < minScore)
@@ -153,6 +157,9 @@ Move *Player::miniMax(std::vector<Move*> moves){
     minScores.push_back(minScore);
   }
 
+  //once we have found the minimum scores for all the possible combinations of
+  //our moves and our opponent's moves, we find the maximum of those scores and
+  //make the corresponding move
   for(unsigned int x = 0; x < minScores.size(); x++)
   {
     if(minScores[x] > maxScore)
