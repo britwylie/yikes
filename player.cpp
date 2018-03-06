@@ -50,10 +50,11 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      if (!this->b->isDone()) {
        if(b->hasMoves(this->my_side)) {
          std::vector<Move*> all_moves = getMoves(this->my_side);
+         //getBestMove uses the heuristic, comment it out and uncomment the next line to use Minimax instead
          Move* best = getBestMove(all_moves);
+         //Move* best = miniMax(all_moves);
          b->doMove(best, this->my_side);
          return best;
-
        }
      }
      return nullptr;
