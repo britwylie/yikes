@@ -85,19 +85,31 @@ Move *Player::getBestMove(std::vector<Move*> moves) {
   Board *maybe = new Board();
   int score = -64;
   Move* bestMove = moves[0];
+  //set up an array for the heuristic (not used yet)
+  int multiplier[8][8] = {
+      {3, -3, 3, 3, 3, 3, -3, 3},
+      {-3, -3, 1, 1, 1, 1, -3, -3},
+      {3, 1, 1, 1, 1, 1, 1, 3},
+      {3, 1, 1, 1, 1, 1, 1, 3},
+      {3, 1, 1, 1, 1, 1, 1, 3},
+      {3, 1, 1, 1, 1, 1, 1, 3},
+      {-3, -3, 1, 1, 1, 1, -3, -3},
+      {3, -3, 3, 3, 3, 3, -3, 3},
+  };
   //go through the vector of possible moves, finding the best move
   std::vector<Move*>::iterator i;
   for(i = moves.begin(); i != moves.end(); i++) {
      maybe = b->copy();
      maybe->doMove(*i, my_side);
-     if ((maybe->count(my_side) - maybe->count(other_side)) > score) {
-       score = maybe->count(my_side) - maybe->count(other_side);
-       if((*i)->getY() == 0 || (*i)->getY() == 7 || (*i)->getX() == 0 || (*i)->getX() == 7){
-         score *= 3;
-       }
-       if((*i)->getY() == 1 || (*i)->getY() == 6 || (*i)->getX() == 1 || (*i)->getX() == 6){
-         score *= -3;
-       }
+     int temp = maybe->count(my_side) - maybe->count(other_side);
+     if((*i)->getY() == 0 || (*i)->getY() == 7 || (*i)->getX() == 0 || (*i)->getX() == 7) {
+       temp *= 3;
+     }
+     if((*i)->getY() == 1 || (*i)->getY() == 6 || (*i)->getX() == 1 || (*i)->getX() == 6) {
+       temp *= -3;
+     }
+     if (temp > score) {
+       score = temp;
        bestMove = *i;
      }
   }
