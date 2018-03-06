@@ -61,6 +61,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 
 /*
 * returns a list of all possible moves for a particular side
+* s - the side to find moves for
 */
 std::vector<Move*> Player::getMoves(Side s) {
   std::vector<Move*> all_moves;
@@ -79,6 +80,7 @@ std::vector<Move*> Player::getMoves(Side s) {
 /*
 * Uses a simple heuristic to sort through the possible moves and get the one
 * that maximizes the score of the move
+* moves - an array of the possible moves
 */
 Move *Player::getBestMove(std::vector<Move*> moves) {
   //sets up a test board
@@ -87,14 +89,14 @@ Move *Player::getBestMove(std::vector<Move*> moves) {
   Move* bestMove = moves[0];
   //set up an array for the heuristic (not used yet)
   int multiplier[8][8] = {
-      {3, -3, 3, 3, 3, 3, -3, 3},
-      {-3, -3, 1, 1, 1, 1, -3, -3},
-      {3, 1, 1, 1, 1, 1, 1, 3},
-      {3, 1, 1, 1, 1, 1, 1, 3},
-      {3, 1, 1, 1, 1, 1, 1, 3},
-      {3, 1, 1, 1, 1, 1, 1, 3},
-      {-3, -3, 1, 1, 1, 1, -3, -3},
-      {3, -3, 3, 3, 3, 3, -3, 3},
+      {3, -2, 2, 2, 2, 2, -2, 3},
+      {-2, -3, 1, 1, 1, 1, -3, -2},
+      {2, 1, 1, 1, 1, 1, 1, 2},
+      {2, 1, 1, 1, 1, 1, 1, 2},
+      {2, 1, 1, 1, 1, 1, 1, 2},
+      {2, 1, 1, 1, 1, 1, 1, 2},
+      {-2, -3, 1, 1, 1, 1, -3, -2},
+      {3, -2, 2, 2, 2, 2, -2, 3},
   };
   //go through the vector of possible moves, finding the best move
   std::vector<Move*>::iterator i;
