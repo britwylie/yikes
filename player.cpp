@@ -5,7 +5,6 @@
 //hello Zach
 #include "player.hpp"
 
-
 /*
  * Constructor for the player; initialize everything here. The side your AI is
  * on (BLACK or WHITE) is passed in as "side". The constructor must finish
@@ -45,27 +44,48 @@ Player::~Player() {
  * return nullptr.
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
-    /*
-     * TODO: Implement how moves your AI should play here. You should first
-     * process the opponent's opponents move before calculating your own move
-     */
 
      b->doMove(opponentsMove, this->other_side);
+
      if (!this->b->isDone()) {
        if(b->hasMoves(this->my_side)) {
+         std::vector<Move*> all_moves;
          Move* possible = new Move(0, 0);
          for (int i = 0; i < 8; i++) {
              for (int j = 0; j < 8; j++) {
                  possible->setX(i);
                  possible->setY(j);
-                 if (this->b->checkMove(possible, my_side)) {
-                   this->b->doMove(possible, my_side);
-                   return possible;
+                 if (b->checkMove(possible, my_side)) {
+                   all_moves.push_back(possible);
                  }
              }
          }
+
+         Move* best = getBestMove(all_moves);
+         b->doMove(all_moves.back(), this->my_side);
+
        }
      }
 
     return nullptr;
+}
+
+/*
+*
+*/
+Move *Player::getBestMove(std::vector<Move*> moves) {
+  Board *maybe = new Board();
+  int score = -64;
+  Move* bestMove = moves[0];
+
+  std::vector<Move*>::iterator i;
+  for(i = moves.begin(); i != moves.end(); i++) {
+     maybe = b->copy();
+     maybe->doMove(*i, my_side);
+     if ((maybe->count(my_side) - maybe->count(other_side)) > score) {
+       score = maybe->count(my_side) - maybe->count(other_side);
+       bestMove = *i;
+     }
+  }
+  return moves[0];
 }
