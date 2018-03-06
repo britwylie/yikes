@@ -4,7 +4,7 @@
 */
 //hello Zach
 #include "player.hpp"
-
+#include <iostream>
 /*
  * Constructor for the player; initialize everything here. The side your AI is
  * on (BLACK or WHITE) is passed in as "side". The constructor must finish
@@ -53,31 +53,42 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
          Move* possible = new Move(0, 0);
          for (int i = 0; i < 8; i++) {
              for (int j = 0; j < 8; j++) {
-                 possible->setX(i);
-                 possible->setY(j);
-                 if (b->checkMove(possible, my_side)) {
+                 possible = new Move(i, j);
+                 if (b->checkMove(possible, this->my_side)) {
                    all_moves.push_back(possible);
+
                  }
              }
          }
 
+
+         //b->doMove(all_moves.back(), my_side);
+         /*std::vector<Move*>::iterator i;
+         for(i = all_moves.begin(); i != all_moves.end(); i++) {
+           std::cerr << (*i)->getX() << " " << (*i)->getY() << " ";
+         }
+         */
+         //return all_moves.back();
+
+
          Move* best = getBestMove(all_moves);
-         b->doMove(all_moves.back(), this->my_side);
+         b->doMove(best, this->my_side);
+         return best;
 
        }
      }
-
-    return nullptr;
+     return nullptr;
 }
 
 /*
 *
 */
 Move *Player::getBestMove(std::vector<Move*> moves) {
+  //sets up a test board
   Board *maybe = new Board();
   int score = -64;
   Move* bestMove = moves[0];
-
+  //go through the vector of possible moves, finding the best move
   std::vector<Move*>::iterator i;
   for(i = moves.begin(); i != moves.end(); i++) {
      maybe = b->copy();
@@ -87,5 +98,5 @@ Move *Player::getBestMove(std::vector<Move*> moves) {
        bestMove = *i;
      }
   }
-  return moves[0];
+  return bestMove;
 }
