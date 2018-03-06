@@ -114,3 +114,48 @@ Move *Player::getBestMove(std::vector<Move*> moves) {
   }
   return bestMove;
 }
+
+Move *Player::miniMax(std::vector<Move*> moves){
+  vector<Move*> yourMoves = getMoves(my_side);
+  vector<Move*> opponentMoves;
+  Board *copy;
+  int score = 0;
+  vector<int> scores;
+  int minScore = 64;
+  vector<int> minScores;
+  int maxScore = -64;
+  Move* choice;
+
+  for(unsigned int i = 0; i < yourMoves.size(); i++)
+  {
+    minScore = 64;
+    copy = this->b->copy();
+    copy->doMove(yourMoves[i], my_side);
+    opponentMoves = getMoves(other_side);
+    for(unsigned int j = 0; j < opponentMoves.size(); j++)
+    {
+      copy->doMove(opponentMoves[j], other_side);
+      score = copy->count(my_side) - copy->count(other_side);
+      scores.push_back(score);
+    }
+    for(unsigned int k = 0; k < scores.size(); k++)
+    {
+      if(scores[k] < minScore)
+      {
+        minScore = scores[k];
+      }
+    }
+    minScores.push_back(minScore);
+  }
+
+  for(unsigned int x = 0; x < minScores.size(); x++)
+  {
+    if(minScores[x] > maxScore)
+    {
+      maxScore = minScores[x];
+      choice = yourMoves[x];
+    }
+  }
+  return choice;
+
+}
