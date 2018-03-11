@@ -54,7 +54,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
          //Move* best = getBestMove(all_moves);
          time_t timer;
          time(&timer);
-         Move* best = miniMax(all_moves[0], timer);
+         Move* best = miniMax(all_moves, timer);
          b->doMove(best, this->my_side);
          return best;
        }
@@ -122,7 +122,7 @@ Move *Player::getBestMove(std::vector<Move*> moves) {
 * miniMax - uses a simple heuristic and the miniMax algorithm to find the
 * best move
 */
-Move *Player::miniMax(Move *m, time_t oldtimer){
+Move *Player::miniMax(std::vector<Move*> moves, time_t oldtimer){
   vector<Move*> yourMoves = getMoves(my_side);
   vector<Move*> opponentMoves;
   Board *copy;
@@ -182,7 +182,7 @@ Move *Player::miniMax(Move *m, time_t oldtimer){
   if(difftime(oldtimer, timer) < 4)
   {
     copy->doMove(choice, my_side);
-    return miniMax(choice, timer);
+    return miniMax(moves, timer);
   }
   return choice;
 
