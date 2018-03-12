@@ -20,6 +20,7 @@ public:
     Move *doMove(Move *opponentsMove, int msLeft);
     Move *getBestMove(vector<Move*> moves);
     std::vector<Move*> getMoves(Side s);
+    Move *recurseMiniMax(std::vector<Move*> moves);
     Move *miniMax(std::vector<Move*> moves);
     // Flag to tell if the player is running within the test_minimax context
     bool testingMinimax;

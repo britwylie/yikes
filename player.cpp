@@ -50,7 +50,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      if (!this->b->isDone()) {
        if(b->hasMoves(this->my_side)) {
          std::vector<Move*> all_moves = getMoves(this->my_side);
-         Move* best = getBestMove(all_moves);
+         Move* best = miniMax(all_moves);
          b->doMove(best, this->my_side);
          return best;
 
@@ -113,6 +113,24 @@ Move *Player::getBestMove(std::vector<Move*> moves) {
      }
   }
   return bestMove;
+}
+
+/*
+* Recursive version of minimax to n depth
+*/
+Move *Player::recurseMiniMax(Board *b, int n) {
+  Move * best;
+  Score max = 64;
+  if (n = 0) {
+  
+    if (n % 2 == 0) {
+
+    } else {
+
+    }
+  } else {
+
+  }
 }
 
 /*
