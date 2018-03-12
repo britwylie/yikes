@@ -13,11 +13,7 @@
 Player::Player(Side side) {
     // Will be set to true in test_minimax.cpp.
     testingMinimax = false;
-    /*
-     * TODO: Do any initialization you need to do here (setting up the board,
-     * precalculating things, etc.) However, remember that you will only have
-     * 30 seconds.
-     */
+
      b = new Board();
      my_side = side;
      //do this better somehow, not sure if necessary
@@ -50,14 +46,20 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      if (!this->b->isDone()) {
        if(b->hasMoves(this->my_side)) {
          std::vector<Move*> all_moves = getMoves(this->my_side);
+         Move* best;
          //getBestMove uses the heuristic, comment it out and uncomment the next line to use Minimax instead
          //Move* best = getBestMove(all_moves);
-         //time_t timer;
-         //time(&timer);
-         Move* best = miniMax(all_moves);
-         //int depth = 1;
-         //int score = this->b->count(my_side) - this->b->count(other_side);
-         //Move* best = recursiveMiniMax(this->b, depth, score, all_moves[0], timer);
+         if (testingMinimax == true) {
+           best = miniMax(all_moves);
+         } else {
+           time_t timer;
+           time(&timer);
+
+           int depth = 13;
+           int score = this->b->count(my_side) - this->b->count(other_side);
+           best = recursiveMiniMax(this->b, depth, score, all_moves[0], timer);
+         }
+
          b->doMove(best, this->my_side);
          return best;
        }
@@ -193,32 +195,37 @@ Move *Player::miniMax(std::vector<Move*> moves){
 
 Move *Player::recursiveMiniMax(Board *board, int depth, int score, Move *move, time_t oldtimer)
 {
-  int maxDepth = 64;
+  //changed to count down instead
+
   Board *copy;
   int oldScore;
   Move *choice;
 
-  if (depth == maxDepth)
+  if (depth == 0)
   {
     return move;
   }
 
   time_t timer;
   time(&timer);
-
+  //timer commented out if not working
+/*
   if(difftime(oldtimer, timer) > 4)
   {
     return move;
   }
-
+*/
+  //gets an array of possible next moves for this color
   std::vector<Move*> possibleMoves = getMoves(my_side);
 
   for(unsigned int i = 0; i < possibleMoves.size(); i++)
   {
     copy = board->copy();
-    copy->doMove(move, my_side);
+    copy->doMove(possibleMoves[i], my_side);
+    //counts the score after my possible move has been made
+
     oldScore = copy->count(my_side) - copy->count(other_side);
-    recursiveMiniMax(copy, depth + 1, oldScore, move, timer);
+    recursiveMiniMax(copy, depth - 1, -oldScore, move, timer);
     if(score > oldScore)
     {
       oldScore = score;
@@ -227,3 +234,7 @@ Move *Player::recursiveMiniMax(Board *board, int depth, int score, Move *move, t
   }
   return choice;
 }
+
+/*
+* first attempt at alpha-beta pruning
+*/
