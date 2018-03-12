@@ -52,12 +52,12 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
          std::vector<Move*> all_moves = getMoves(this->my_side);
          //getBestMove uses the heuristic, comment it out and uncomment the next line to use Minimax instead
          //Move* best = getBestMove(all_moves);
-         time_t timer;
-         time(&timer);
-         //Move* best = miniMax(all_moves, timer);
-         int depth = 1;
-         int score = this->b->count(my_side) - this->b->count(other_side);
-         Move* best = recursiveMiniMax(this->b, depth, score, all_moves[0], timer);
+         //time_t timer;
+         //time(&timer);
+         Move* best = miniMax(all_moves);
+         //int depth = 1;
+         //int score = this->b->count(my_side) - this->b->count(other_side);
+         //Move* best = recursiveMiniMax(this->b, depth, score, all_moves[0], timer);
          b->doMove(best, this->my_side);
          return best;
        }
@@ -125,7 +125,7 @@ Move *Player::getBestMove(std::vector<Move*> moves) {
 * miniMax - uses a simple heuristic and the miniMax algorithm to find the
 * best move
 */
-Move *Player::miniMax(std::vector<Move*> moves, time_t oldtimer){
+Move *Player::miniMax(std::vector<Move*> moves){
   vector<Move*> yourMoves = getMoves(my_side);
   vector<Move*> opponentMoves;
   Board *copy;
