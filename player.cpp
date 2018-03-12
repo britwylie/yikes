@@ -54,7 +54,10 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
          //Move* best = getBestMove(all_moves);
          time_t timer;
          time(&timer);
-         Move* best = miniMax(all_moves, timer);
+         //Move* best = miniMax(all_moves, timer);
+         int depth = 1;
+         int score = this->b->count(my_side) - this->b->count(other_side);
+         Move* best = recursiveMiniMax(this->b, depth, score, all_moves[0], timer);
          b->doMove(best, this->my_side);
          return best;
        }
@@ -133,10 +136,10 @@ Move *Player::miniMax(std::vector<Move*> moves, time_t oldtimer){
   int maxScore = -64;
   Move* choice;
 
-  if(yourMoves.size() == 1)
+  /*if(yourMoves.size() == 1)
   {
     choice = yourMoves[0];
-  }
+  }*/
 
   //go through our list of possible moves, apply one to the board each time
   for(unsigned int i = 0; i < yourMoves.size(); i++)
@@ -176,14 +179,51 @@ Move *Player::miniMax(std::vector<Move*> moves, time_t oldtimer){
     }
   }
 
-  time_t timer;
+  /*time_t timer;
   time(&timer);
 
   if(difftime(oldtimer, timer) < 4)
   {
     copy->doMove(choice, my_side);
     return miniMax(moves, timer);
-  }
+  }*/
   return choice;
 
+}
+
+Move *Player::recursiveMiniMax(Board *board, int depth, int score, Move *move, time_t oldtimer)
+{
+  int maxDepth = 64;
+  Board *copy;
+  int oldScore;
+  Move *choice;
+
+  if (depth == maxDepth)
+  {
+    return move;
+  }
+
+  time_t timer;
+  time(&timer);
+
+  if(difftime(oldtimer, timer) > 4)
+  {
+    return move;
+  }
+
+  std::vector<Move*> possibleMoves = getMoves(my_side);
+
+  for(unsigned int i = 0; i < possibleMoves.size(); i++)
+  {
+    copy = board->copy();
+    copy->doMove(move, my_side);
+    oldScore = copy->count(my_side) - copy->count(other_side);
+    recursiveMiniMax(copy, depth + 1, oldScore, move, timer);
+    if(score > oldScore)
+    {
+      oldScore = score;
+      choice = move;
+    }
+  }
+  return choice;
 }
