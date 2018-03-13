@@ -54,12 +54,11 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
          } else {
            time_t timer;
            time(&timer);
-
-           int depth = 13;
-           int score = this->b->count(my_side) - this->b->count(other_side);
-           best = recursiveMiniMax(this->b, depth, score, all_moves[0], timer);
+           int depth = 0;
+           //int score = this->b->count(my_side) - this->b->count(other_side);
+           //best = recursiveMiniMax(this->b, depth, score, all_moves[0], timer);
+           best = recursiveMiniMax(this->b, my_side, -64, depth);
          }
-
          b->doMove(best, this->my_side);
          return best;
        }
@@ -192,6 +191,67 @@ Move *Player::miniMax(std::vector<Move*> moves){
   return choice;
 
 }
+
+
+/*
+* New attempt at recursive minimax
+*/
+
+Move *Player::recursiveMiniMax(Board *board, Side s, int alpha, int depth) {
+  Board *copy;
+  int score, next_score, max;
+  Side other_side = (s == BLACK) ? WHITE : BLACK;
+  Move *best;
+
+
+
+  //base case
+  if (depth == 0) {
+    //get all possible moves for this side
+    std::vector<Move*> moves = getMoves(s);
+    best = moves[0];
+    max = alpha;
+    //score = board->count(s) - board->count(other_side);
+    //find the one that maximizes the score
+    for(unsigned int i = 0; i < moves.size(); i++) {
+      copy = board->copy();
+      copy->doMove(moves[i], s);
+      next_score = copy->count(s) - copy->count(other_side);
+      if (next_score > max) {
+        max = next_score;
+        best = moves[i];
+      }
+    }
+    return best;
+  }
+
+  //get all possible moves for this side
+  std::vector<Move*> moves = getMoves(s);
+  best = moves[0];
+  max = alpha;
+  //score = board->count(s) - board->count(other_side);
+  //find the one that maximizes the score
+  for(unsigned int i = 0; i < moves.size(); i++) {
+    copy = board->copy();
+    copy->doMove(moves[i], s);
+
+    next_score = copy->count(s) - copy->count(other_side);
+    if (next_score > max) {
+      max = next_score;
+      best = moves[i];
+    }
+
+    recursiveMiniMax(copy, other_side, max, depth - 1);
+  }
+
+
+
+
+
+}
+
+
+
 
 Move *Player::recursiveMiniMax(Board *board, int depth, int score, Move *move, time_t oldtimer)
 {

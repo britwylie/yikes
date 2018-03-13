@@ -25,6 +25,7 @@ public:
 
 
     Move *recursiveMiniMax(Board *board, int depth, int score, Move *move, time_t oldtimer);
+    Move *recursiveMiniMax(Board *board, Side s, int alpha, int depth);
 
     // Flag to tell if the player is running within the test_minimax context
     bool testingMinimax;
