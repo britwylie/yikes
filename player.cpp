@@ -46,19 +46,23 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      if (!this->b->isDone()) {
        if(b->hasMoves(this->my_side)) {
          std::vector<Move*> all_moves = getMoves(this->my_side);
-         Move* best;
+         //Move* best;
          //getBestMove uses the heuristic, comment it out and uncomment the next line to use Minimax instead
-         //Move* best = getBestMove(all_moves);
-         if (testingMinimax == true) {
+         Move* best = getBestMove(all_moves);
+         /*if (testingMinimax == true) {
            best = miniMax(all_moves);
          } else {
            time_t timer;
            time(&timer);
-           int depth = 0;
-           //int score = this->b->count(my_side) - this->b->count(other_side);
-           //best = recursiveMiniMax(this->b, depth, score, all_moves[0], timer);
-           best = recursiveMiniMax(this->b, my_side, -64, depth);
-         }
+
+           int depth = 13;
+           int score = this->b->count(my_side) - this->b->count(other_side);
+           best = recursiveMiniMax(this->b, depth, score, all_moves[0], timer);
+         }*/
+
+         /*negaMax(-64, 64, 5);
+         best = negaMaxMove;*/
+
          b->doMove(best, this->my_side);
          return best;
        }
@@ -113,6 +117,15 @@ Move *Player::getBestMove(std::vector<Move*> moves) {
      int temp = maybe->count(my_side) - maybe->count(other_side);
      //multiply by values to get modified possible score
      temp *= multiplier[(*i)->getY()][(*i)->getX()];
+     //account for mobility
+     if(getMoves(my_side) > getMoves(other_side))
+     {
+       temp *= 2;
+     }
+     if(getMoves(my_side) < getMoves(other_side))
+     {
+       temp *= -2;
+     }
 
      if (temp > score) {
        score = temp;
@@ -298,3 +311,34 @@ Move *Player::recursiveMiniMax(Board *board, int depth, int score, Move *move, t
 /*
 * first attempt at alpha-beta pruning
 */
+
+int Player::negaMax(int depth, int alpha, int beta)
+{
+  std::vector<Move*> possibleMoves = getMoves(my_side);
+  int score;
+  Move* choice;
+
+  if(depth == 0)
+  {
+    score = this->b->count(my_side) - this->b->count(other_side);
+    return score;
+  }
+
+  for(unsigned int i = 0; i < possibleMoves.size(); i++)
+  {
+    score = -negaMax(depth - 1, -beta, -alpha);
+
+    if(score > alpha)
+    {
+      alpha = score;
+      choice = possibleMoves[i];
+    }
+    if(score >= beta)
+    {
+      return beta;
+    }
+  }
+
+  negaMaxMove = choice;
+  return alpha;
+}
