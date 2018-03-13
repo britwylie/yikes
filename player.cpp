@@ -46,19 +46,17 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      if (!this->b->isDone()) {
        if(b->hasMoves(this->my_side)) {
          std::vector<Move*> all_moves = getMoves(this->my_side);
-         //Move* best;
+         Move* best = all_moves[0];
+         int depth;
          //getBestMove uses the heuristic, comment it out and uncomment the next line to use Minimax instead
-         Move* best = getBestMove(all_moves);
-         /*if (testingMinimax == true) {
-           best = miniMax(all_moves);
-         } else {
-           time_t timer;
-           time(&timer);
+         //Move* best = getBestMove(all_moves);
+         //if (testingMinimax) {
+           //best = miniMax(all_moves);
+         //} else {
+           depth = 5;
+           recursiveMiniMax(b, my_side, best, depth);
+         //}
 
-           int depth = 13;
-           int score = this->b->count(my_side) - this->b->count(other_side);
-           best = recursiveMiniMax(this->b, depth, score, all_moves[0], timer);
-         }*/
 
          /*negaMax(-64, 64, 5);
          best = negaMaxMove;*/
@@ -209,104 +207,61 @@ Move *Player::miniMax(std::vector<Move*> moves){
 /*
 * New attempt at recursive minimax
 */
-
-Move *Player::recursiveMiniMax(Board *board, Side s, int alpha, int depth) {
+int Player::recursiveMiniMax(Board *board, Side s, Move*& best, int depth) {
   Board *copy;
-  int score, next_score, max;
+  int next_score, max;
   Side other_side = (s == BLACK) ? WHITE : BLACK;
-  Move *best;
-
-
-
+  int multiplier[8][8] = {
+      {4, -2, 2, 2, 2, 2, -2, 4},
+      {-2, -3, 1, 1, 1, 1, -3, -2},
+      {2, 1, 1, 1, 1, 1, 1, 2},
+      {2, 1, 1, 1, 1, 1, 1, 2},
+      {2, 1, 1, 1, 1, 1, 1, 2},
+      {2, 1, 1, 1, 1, 1, 1, 2},
+      {-2, -3, 1, 1, 1, 1, -3, -2},
+      {4, -2, 2, 2, 2, 2, -2, 4},
+  };
+  std::vector<Move*> moves = getMoves(s);
+  max = -64;
   //base case
-  if (depth == 0) {
-    //get all possible moves for this side
-    std::vector<Move*> moves = getMoves(s);
-    best = moves[0];
-    max = alpha;
-    //score = board->count(s) - board->count(other_side);
-    //find the one that maximizes the score
-    for(unsigned int i = 0; i < moves.size(); i++) {
-      copy = board->copy();
-      copy->doMove(moves[i], s);
-      next_score = copy->count(s) - copy->count(other_side);
-      if (next_score > max) {
-        max = next_score;
-        best = moves[i];
+  if (depth == 0  || moves.size() == 0) {
+    int score = 0;
+    for (int i = 0; i < 8; i++) {
+      for (int j = 0; j < 8; j++) {
+        if (board->get(s, i, j)) {
+          score += multiplier[i][j];
+        } else if (board->get(other_side, i , j)) {
+          score -= multiplier[i][j];
+        }
       }
     }
-    return best;
+    return score;
   }
 
   //get all possible moves for this side
-  std::vector<Move*> moves = getMoves(s);
-  best = moves[0];
-  max = alpha;
+
   //score = board->count(s) - board->count(other_side);
   //find the one that maximizes the score
   for(unsigned int i = 0; i < moves.size(); i++) {
     copy = board->copy();
     copy->doMove(moves[i], s);
+    Move* temp = moves[i];
 
-    next_score = copy->count(s) - copy->count(other_side);
+    next_score = -recursiveMiniMax(copy, other_side, temp, depth - 1);
+    delete copy;
     if (next_score > max) {
       max = next_score;
       best = moves[i];
     }
-
-    recursiveMiniMax(copy, other_side, max, depth - 1);
   }
-
-
-
-
-
-}
-
-
-
-
-Move *Player::recursiveMiniMax(Board *board, int depth, int score, Move *move, time_t oldtimer)
-{
-  //changed to count down instead
-
-  Board *copy;
-  int oldScore;
-  Move *choice;
-
-  if (depth == 0)
-  {
-    return move;
-  }
-
-  time_t timer;
-  time(&timer);
-  //timer commented out if not working
-/*
-  if(difftime(oldtimer, timer) > 4)
-  {
-    return move;
-  }
-*/
-  //gets an array of possible next moves for this color
-  std::vector<Move*> possibleMoves = getMoves(my_side);
-
-  for(unsigned int i = 0; i < possibleMoves.size(); i++)
-  {
-    copy = board->copy();
-    copy->doMove(possibleMoves[i], my_side);
-    //counts the score after my possible move has been made
-
-    oldScore = copy->count(my_side) - copy->count(other_side);
-    recursiveMiniMax(copy, depth - 1, -oldScore, move, timer);
-    if(score > oldScore)
-    {
-      oldScore = score;
-      choice = move;
+  for(unsigned int i = 0; i < moves.size(); i++) {
+    if (moves[i] != best) {
+      delete moves[i];
     }
   }
-  return choice;
+
 }
+
 
 /*
 * first attempt at alpha-beta pruning

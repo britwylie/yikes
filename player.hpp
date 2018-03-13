@@ -23,9 +23,7 @@ public:
 
     Move *miniMax(std::vector<Move*> moves);
 
-
-    Move *recursiveMiniMax(Board *board, int depth, int score, Move *move, time_t oldtimer);
-    Move *recursiveMiniMax(Board *board, Side s, int alpha, int depth);
+    int recursiveMiniMax(Board *board, Side s, Move*& best, int depth);
 
     // Flag to tell if the player is running within the test_minimax context
     bool testingMinimax;
