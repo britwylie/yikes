@@ -99,14 +99,14 @@ Move *Player::getBestMove(std::vector<Move*> moves) {
   Move* bestMove = moves[0];
   //set up an array for the heuristic (not used yet)
   int multiplier[8][8] = {
-      {100, -50, 8, 8, 8, 8, -50, 100},
+      {10, -50, 8, 8, 8, 8, -50, 10},
       {-50, -50, 1, 1, 1, 1, -50, -50},
       {8, 1, 1, 1, 1, 1, 1, 8},
       {8, 1, 1, 1, 1, 1, 1, 8},
       {8, 1, 1, 1, 1, 1, 1, 8},
       {8, 1, 1, 1, 1, 1, 1, 8},
       {-50, -50, 1, 1, 1, 1, -50, -50},
-      {100, -50, 8, 8, 8, 8, -50, 100},
+      {10, -50, 8, 8, 8, 8, -50, 10},
   };
   //go through the vector of possible moves, finding the best move
   std::vector<Move*>::iterator i;
@@ -114,6 +114,8 @@ Move *Player::getBestMove(std::vector<Move*> moves) {
      maybe = b->copy();
      maybe->doMove(*i, my_side);
      int temp = maybe->count(my_side) - maybe->count(other_side);
+     temp -= getFrontierSquares(my_side, b);
+     temp += getFrontierSquares(other_side, b);
      //multiply by values to get modified possible score
      temp *= multiplier[(*i)->getY()][(*i)->getX()];
      //account for mobility
@@ -200,21 +202,22 @@ int Player::recursiveMiniMax(Board *board, Side s, Move*& best, int depth) {
   int next_score, max;
   Side other_side = (s == BLACK) ? WHITE : BLACK;
   int multiplier[8][8] = {
-      {100, -50, 8, 8, 8, 8, -50, 100},
+      {10, -50, 8, 8, 8, 8, -50, 10},
       {-50, -50, 1, 1, 1, 1, -50, -50},
       {8, 1, 1, 1, 1, 1, 1, 8},
       {8, 1, 1, 1, 1, 1, 1, 8},
       {8, 1, 1, 1, 1, 1, 1, 8},
       {8, 1, 1, 1, 1, 1, 1, 8},
       {-50, -50, 1, 1, 1, 1, -50, -50},
-      {100, -50, 8, 8, 8, 8, -50, 100},
+      {10, -50, 8, 8, 8, 8, -50, 10},
   };
   std::vector<Move*> moves = getMoves(s);
   max = std::numeric_limits<int>::min();
   //base case
-  if (depth == 0  || moves.size() == 0) {
-    int score = 0;
-
+  if (depth == 0  ){//}|| moves.size() == 0) {
+    int score = board->count(s) - board->count(other_side);
+    score -= getFrontierSquares(s, board);
+    score += getFrontierSquares(other_side, board);
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
         if (board->get(s, i, j)) {
@@ -224,8 +227,7 @@ int Player::recursiveMiniMax(Board *board, Side s, Move*& best, int depth) {
         }
       }
     }
-    score -= getFrontierSquares(s, board);
-    score += getFrontierSquares(other_side, board);
+
     if(getMoves(s).size() > getMoves(other_side).size())
     {
       score += 10;
@@ -249,6 +251,7 @@ int Player::recursiveMiniMax(Board *board, Side s, Move*& best, int depth) {
     Move* temp = moves[i];
 
     next_score = -recursiveMiniMax(copy, other_side, temp, depth - 1);
+    next_score *= multiplier[moves[i]->getY()][moves[i]->getX()];
     delete copy;
     if (next_score > max) {
       max = next_score;
