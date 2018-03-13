@@ -16,7 +16,6 @@ public:
     Side my_side;
     Side other_side;
 
-
     Move *doMove(Move *opponentsMove, int msLeft);
     Move *getBestMove(vector<Move*> moves);
     std::vector<Move*> getMoves(Side s);
