@@ -8,3 +8,5 @@ helped make the heuristic better.
 
 To make our bot tournament-worthy, we made miniMax recursive to depth 4. We also
 improved the heuristic by accounting for mobility and frontier squares.
+We also attempted alpha beta pruning in the negaMax function but didn't finish
+it.
