@@ -24,6 +24,7 @@ public:
     Move *miniMax(std::vector<Move*> moves);
 
     int recursiveMiniMax(Board *board, Side s, Move*& best, int depth);
+    int getFrontierSquares(Side s, Board* b);
 
     // Flag to tell if the player is running within the test_minimax context
     bool testingMinimax;

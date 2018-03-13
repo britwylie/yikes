@@ -5,6 +5,7 @@
 //hello Zach
 #include "player.hpp"
 #include <iostream>
+#include <limits>
 /*
  * Constructor for the player; initialize everything here. The side your AI is
  * on (BLACK or WHITE) is passed in as "side". The constructor must finish
@@ -46,15 +47,15 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      if (!this->b->isDone()) {
        if(b->hasMoves(this->my_side)) {
          std::vector<Move*> all_moves = getMoves(this->my_side);
-         //Move* best = all_moves[0];
+         Move* best = all_moves[0];
          int depth;
          //getBestMove uses the heuristic, comment it out and uncomment the next line to use Minimax instead
-         Move* best = getBestMove(all_moves);
+         //Move* best = getBestMove(all_moves);
          //if (testingMinimax) {
            //best = miniMax(all_moves);
          //} else {
            depth = 4;
-           //recursiveMiniMax(b, my_side, best, depth);
+           recursiveMiniMax(b, my_side, best, depth);
          //}
 
 
@@ -94,18 +95,18 @@ std::vector<Move*> Player::getMoves(Side s) {
 Move *Player::getBestMove(std::vector<Move*> moves) {
   //sets up a test board
   Board *maybe = new Board();
-  int score = -64;
+  int score = std::numeric_limits<int>::min();
   Move* bestMove = moves[0];
   //set up an array for the heuristic (not used yet)
   int multiplier[8][8] = {
-      {10, -50, 8, 8, 8, 8, -50, 10},
+      {100, -50, 8, 8, 8, 8, -50, 100},
       {-50, -50, 1, 1, 1, 1, -50, -50},
       {8, 1, 1, 1, 1, 1, 1, 8},
       {8, 1, 1, 1, 1, 1, 1, 8},
       {8, 1, 1, 1, 1, 1, 1, 8},
       {8, 1, 1, 1, 1, 1, 1, 8},
       {-50, -50, 1, 1, 1, 1, -50, -50},
-      {10, -50, 8, 8, 8, 8, -50, 10},
+      {100, -50, 8, 8, 8, 8, -50, 100},
   };
   //go through the vector of possible moves, finding the best move
   std::vector<Move*>::iterator i;
@@ -199,20 +200,21 @@ int Player::recursiveMiniMax(Board *board, Side s, Move*& best, int depth) {
   int next_score, max;
   Side other_side = (s == BLACK) ? WHITE : BLACK;
   int multiplier[8][8] = {
-      {4, -2, 2, 2, 2, 2, -2, 4},
-      {-2, -3, 1, 1, 1, 1, -3, -2},
-      {2, 1, 1, 1, 1, 1, 1, 2},
-      {2, 1, 1, 1, 1, 1, 1, 2},
-      {2, 1, 1, 1, 1, 1, 1, 2},
-      {2, 1, 1, 1, 1, 1, 1, 2},
-      {-2, -3, 1, 1, 1, 1, -3, -2},
-      {4, -2, 2, 2, 2, 2, -2, 4},
+      {100, -50, 8, 8, 8, 8, -50, 100},
+      {-50, -50, 1, 1, 1, 1, -50, -50},
+      {8, 1, 1, 1, 1, 1, 1, 8},
+      {8, 1, 1, 1, 1, 1, 1, 8},
+      {8, 1, 1, 1, 1, 1, 1, 8},
+      {8, 1, 1, 1, 1, 1, 1, 8},
+      {-50, -50, 1, 1, 1, 1, -50, -50},
+      {100, -50, 8, 8, 8, 8, -50, 100},
   };
   std::vector<Move*> moves = getMoves(s);
-  max = -64;
+  max = std::numeric_limits<int>::min();
   //base case
   if (depth == 0  || moves.size() == 0) {
     int score = 0;
+
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
         if (board->get(s, i, j)) {
@@ -222,6 +224,18 @@ int Player::recursiveMiniMax(Board *board, Side s, Move*& best, int depth) {
         }
       }
     }
+    score -= getFrontierSquares(s, board);
+    score += getFrontierSquares(other_side, board);
+    if(getMoves(s).size() > getMoves(other_side).size())
+    {
+      score += 10;
+    }
+    if(getMoves(s).size() < getMoves(other_side).size())
+    {
+      score += -30;
+    }
+
+
     return score;
   }
 
@@ -249,6 +263,29 @@ int Player::recursiveMiniMax(Board *board, Side s, Move*& best, int depth) {
 
 }
 
+/*
+* Evaluates the frontier squares available for a given side
+*/
+int Player::getFrontierSquares(Side s, Board* b) {
+  Side other_side = (s == BLACK) ? WHITE : BLACK;
+  int count = 0;
+  for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < 8; j++) {
+      if (b->get(s, i, j)) {
+        for (int x = -1; x < 2; x++) {
+          for (int y = -1; y < 2; y++) {
+            if ((i + x < 8 && i + x >= 0) && (j + y < 8 && j + y >= 0)) {
+              if (!b->get(s, i + x, j + y) && !b->get(other_side, i + x, j + y)) {
+                count ++;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return count;
+}
 
 /*
 * first attempt at alpha-beta pruning
