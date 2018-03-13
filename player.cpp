@@ -49,7 +49,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
          Move* best;
          //getBestMove uses the heuristic, comment it out and uncomment the next line to use Minimax instead
          //Move* best = getBestMove(all_moves);
-         if (testingMinimax == true) {
+         /*if (testingMinimax == true) {
            best = miniMax(all_moves);
          } else {
            time_t timer;
@@ -58,7 +58,10 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
            int depth = 13;
            int score = this->b->count(my_side) - this->b->count(other_side);
            best = recursiveMiniMax(this->b, depth, score, all_moves[0], timer);
-         }
+         }*/
+
+         negaMax(-64, 64, 5);
+         best = negaMaxMove;
 
          b->doMove(best, this->my_side);
          return best;
@@ -238,3 +241,34 @@ Move *Player::recursiveMiniMax(Board *board, int depth, int score, Move *move, t
 /*
 * first attempt at alpha-beta pruning
 */
+
+int Player::negaMax(int depth, int alpha, int beta)
+{
+  std::vector<Move*> possibleMoves = getMoves(my_side);
+  int score;
+  Move* choice;
+
+  if(depth == 0)
+  {
+    score = this->b->count(my_side) - this->b->count(other_side);
+    return score;
+  }
+
+  for(unsigned int i = 0; i < possibleMoves.size(); i++)
+  {
+    score = -negaMax(depth - 1, -beta, -alpha);
+
+    if(score > alpha)
+    {
+      alpha = score;
+      choice = possibleMoves[i];
+    }
+    if(score >= beta)
+    {
+      return beta;
+    }
+  }
+
+  negaMaxMove = choice;
+  return alpha;
+}

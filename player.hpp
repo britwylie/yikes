@@ -28,6 +28,11 @@ public:
 
     // Flag to tell if the player is running within the test_minimax context
     bool testingMinimax;
+
+    //to keep track of the move associated with the best score produced by negaMax
+    Move* negaMaxMove;
+
+    int negaMax(int depth, int alpha, int beta);
 };
 
 #endif
