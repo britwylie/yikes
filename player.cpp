@@ -46,15 +46,15 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      if (!this->b->isDone()) {
        if(b->hasMoves(this->my_side)) {
          std::vector<Move*> all_moves = getMoves(this->my_side);
-         Move* best = all_moves[0];
+         //Move* best = all_moves[0];
          int depth;
          //getBestMove uses the heuristic, comment it out and uncomment the next line to use Minimax instead
-         //Move* best = getBestMove(all_moves);
+         Move* best = getBestMove(all_moves);
          //if (testingMinimax) {
            //best = miniMax(all_moves);
          //} else {
-           depth = 5;
-           recursiveMiniMax(b, my_side, best, depth);
+           depth = 4;
+           //recursiveMiniMax(b, my_side, best, depth);
          //}
 
 
@@ -98,14 +98,14 @@ Move *Player::getBestMove(std::vector<Move*> moves) {
   Move* bestMove = moves[0];
   //set up an array for the heuristic (not used yet)
   int multiplier[8][8] = {
-      {3, -2, 2, 2, 2, 2, -2, 3},
-      {-2, -3, 1, 1, 1, 1, -3, -2},
-      {2, 1, 1, 1, 1, 1, 1, 2},
-      {2, 1, 1, 1, 1, 1, 1, 2},
-      {2, 1, 1, 1, 1, 1, 1, 2},
-      {2, 1, 1, 1, 1, 1, 1, 2},
-      {-2, -3, 1, 1, 1, 1, -3, -2},
-      {3, -2, 2, 2, 2, 2, -2, 3},
+      {10, -50, 8, 8, 8, 8, -50, 10},
+      {-50, -50, 1, 1, 1, 1, -50, -50},
+      {8, 1, 1, 1, 1, 1, 1, 8},
+      {8, 1, 1, 1, 1, 1, 1, 8},
+      {8, 1, 1, 1, 1, 1, 1, 8},
+      {8, 1, 1, 1, 1, 1, 1, 8},
+      {-50, -50, 1, 1, 1, 1, -50, -50},
+      {10, -50, 8, 8, 8, 8, -50, 10},
   };
   //go through the vector of possible moves, finding the best move
   std::vector<Move*>::iterator i;
@@ -116,13 +116,13 @@ Move *Player::getBestMove(std::vector<Move*> moves) {
      //multiply by values to get modified possible score
      temp *= multiplier[(*i)->getY()][(*i)->getX()];
      //account for mobility
-     if(getMoves(my_side) > getMoves(other_side))
+     if(getMoves(my_side).size() > getMoves(other_side).size())
      {
-       temp *= 2;
+       temp *= 10;
      }
-     if(getMoves(my_side) < getMoves(other_side))
+     if(getMoves(my_side).size() < getMoves(other_side).size())
      {
-       temp *= -2;
+       temp *= -30;
      }
 
      if (temp > score) {
@@ -147,11 +147,6 @@ Move *Player::miniMax(std::vector<Move*> moves){
   vector<int> minScores;
   int maxScore = -64;
   Move* choice;
-
-  /*if(yourMoves.size() == 1)
-  {
-    choice = yourMoves[0];
-  }*/
 
   //go through our list of possible moves, apply one to the board each time
   for(unsigned int i = 0; i < yourMoves.size(); i++)
@@ -191,14 +186,6 @@ Move *Player::miniMax(std::vector<Move*> moves){
     }
   }
 
-  /*time_t timer;
-  time(&timer);
-
-  if(difftime(oldtimer, timer) < 4)
-  {
-    copy->doMove(choice, my_side);
-    return miniMax(moves, timer);
-  }*/
   return choice;
 
 }
