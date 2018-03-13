@@ -46,9 +46,9 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      if (!this->b->isDone()) {
        if(b->hasMoves(this->my_side)) {
          std::vector<Move*> all_moves = getMoves(this->my_side);
-         Move* best;
+         //Move* best;
          //getBestMove uses the heuristic, comment it out and uncomment the next line to use Minimax instead
-         //Move* best = getBestMove(all_moves);
+         Move* best = getBestMove(all_moves);
          /*if (testingMinimax == true) {
            best = miniMax(all_moves);
          } else {
@@ -60,8 +60,8 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
            best = recursiveMiniMax(this->b, depth, score, all_moves[0], timer);
          }*/
 
-         negaMax(-64, 64, 5);
-         best = negaMaxMove;
+         /*negaMax(-64, 64, 5);
+         best = negaMaxMove;*/
 
          b->doMove(best, this->my_side);
          return best;
@@ -117,6 +117,15 @@ Move *Player::getBestMove(std::vector<Move*> moves) {
      int temp = maybe->count(my_side) - maybe->count(other_side);
      //multiply by values to get modified possible score
      temp *= multiplier[(*i)->getY()][(*i)->getX()];
+     //account for mobility
+     if(getMoves(my_side) > getMoves(other_side))
+     {
+       temp *= 2;
+     }
+     if(getMoves(my_side) < getMoves(other_side))
+     {
+       temp *= -2;
+     }
 
      if (temp > score) {
        score = temp;
